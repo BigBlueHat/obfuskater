@@ -18,6 +18,13 @@ Currently, it does nothing more than hunt down the `from` address/field
 in response JSON docs (after it retrieves them from a cloudant account)
 and obfuscates them a bit (ex: b...@bigbluehat.com).
 
+## Usage
+
+```
+$ pip install -r requirements.txt
+$ ./serve.sh
+```
+
 ## License
 
 [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0)
