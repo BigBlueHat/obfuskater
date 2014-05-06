@@ -1,0 +1,54 @@
+"""
+Copyright 2014 Benjamin Young (aka BigBlueHat)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import re
+from ConfigParser import ConfigParser
+
+import requests
+from aspen.logging import log
+
+config = ConfigParser()
+config.read('../config.ini')
+base_url = config.get('endpoint', 'base_url')
+
+[---]
+r = requests.get(base_url + path['url'].replace("\\", "/"),
+                 headers={'Accept': 'application/json'},
+                 params=qs)
+data = r.json()
+headers = r.headers
+# let aspen handle this one
+headers.pop('content-length', None)
+for header, value in headers.iteritems():
+    response.headers.add(header, value)
+
+# couchmail.py specific document obfucation things...
+# TODO: make this modular/pluggable/awesome/pythonic
+def email(value):
+    return re.sub(r'(.*)<(.)(.*)@(.*)>', r'\1<\2...@\4>', value)
+
+if 'from' in data:
+    data['from'] = email(data['from'])
+elif 'rows' in data:
+    for row in data['rows']:
+        if 'fields' in row and 'from' in row['fields']:
+            row['fields']['from'] = email(row['fields']['from'])
+        elif 'doc' in row and 'from' in row['doc']:
+            row['doc']['from'] = email(row['doc']['from'])
+            row['doc']['headers'] = email(row['doc']['headers'])
+
+[---] application/json
+data
