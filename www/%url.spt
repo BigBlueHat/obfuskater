@@ -46,9 +46,11 @@ elif 'rows' in data:
     for row in data['rows']:
         if 'fields' in row and 'from' in row['fields']:
             row['fields']['from'] = email(row['fields']['from'])
-        elif 'doc' in row and 'from' in row['doc']:
-            row['doc']['from'] = email(row['doc']['from'])
-            row['doc']['headers'] = email(row['doc']['headers'])
+        if 'doc' in row:
+            if 'from' in row['doc']:
+                row['doc']['from'] = email(row['doc']['from'])
+            if 'headers' in row['doc'] and 'from' in row['doc']['headers']:
+                row['doc']['headers']['from'] = email(row['doc']['headers']['from'])
 
 [---] application/json
 data
